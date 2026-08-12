@@ -28,7 +28,8 @@ class Game:
         self.food = self.random_food_position()
 
     def reset_snake(self):
-        self.snake = Snake(self.start_position(cfg.GAME_WINDOW_WIDTH), self.start_position(cfg.GAME_WINDOW_HEIGHT), "right")
+        #self.snake = Snake(self.start_position(cfg.GAME_WINDOW_WIDTH), self.start_position(cfg.GAME_WINDOW_HEIGHT), "right")
+        self.snake = Snake(180, 40, "right")
 
     def random_food_position(self):
         return [self.random_grid_coordinate(cfg.GAME_WINDOW_WIDTH), self.random_grid_coordinate(cfg.GAME_WINDOW_HEIGHT)]
@@ -53,21 +54,23 @@ class Game:
             print("Game is finished. Not updating game state.")
             return
         
-        # Reward for RL agent
+        # Reward for each step agent takes
         self.reward = -0.05
 
-        # If head is on top of food, respawn food and increment growth queue
+        # If head is on top of food, respawns food and increments growth queue
         if self.inside_food(self.snake):
             self.handle_food_eaten(self.snake)
 
         self.snake.move()
-        
+
+        # Checks if snake dies
         if self.outside_game_window(self.snake) or self.snake.inside_itself():
             self.reward = -10
             self.done = True
             self.update_scores()
 
-        # Give the agent reward for moving on top of the food
+        # After the snake moved give reward if on top of food
+        # Does not respawn the food
         elif self.inside_food(self.snake):
             self.reward = 10
     

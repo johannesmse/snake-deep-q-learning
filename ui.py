@@ -10,11 +10,18 @@ class UI:
         self.snake = game.snake
         self.snake_representation = []
         self.update_snake_representation()
+
         self.game_window = pygame.Rect(0, 0, cfg.GAME_WINDOW_WIDTH, cfg.GAME_WINDOW_HEIGHT)
         self.menu_window = pygame.Rect(cfg.MENU_START_X, 0, cfg.MENU_WINDOW_WIDTH, cfg.MENU_WINDOW_HEIGHT)
+
+        self.train_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH, 28, cfg.BUTTON_WIDTH // 2, cfg.BUTTON_HEIGHT)
+        self.evaluate_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH + cfg.BUTTON_WIDTH // 2, 28, cfg.BUTTON_WIDTH // 2, cfg.BUTTON_HEIGHT)
+        self.button_font = pygame.font.SysFont(None, 24)
+        
         self.food = pygame.Rect(0, 0, cfg.SNAKE_SIZE, cfg.SNAKE_SIZE)
 
         self.score_font = pygame.font.SysFont(None, 24)
+        
         
 
         self.green = (0, 255, 0)
@@ -22,6 +29,8 @@ class UI:
         self.white = (255, 255, 255)
         self.red = (255, 0, 0)
         self.grey = (54, 69, 79)
+        self.activated_color = (40, 40, 40)
+        self.unactivated_color = (100, 100, 100)
 
         self.agent = agent
         self.display_setting = None
@@ -44,10 +53,7 @@ class UI:
             self.snake_representation[i].y = snake_y
     
     def update_food_position(self):
-        food_x, food_y = self.game.food
-
-        self.food.x = food_x
-        self.food.y = food_y
+        self.food.x, self.food.y = self.game.food
     
 
     def draw(self):
@@ -131,12 +137,30 @@ class UI:
             text_rect = text_surface.get_rect(center=(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH // 2, 160))
             self.screen.blit(text_surface, text_rect)
 
+            # Draw agent buttons
+            if self.agent.train_mode:
+                train_button_color = self.activated_color
+                eval_button_color = self.unactivated_color
+            else:
+                train_button_color = self.unactivated_color
+                eval_button_color = self.activated_color
+
+            # Train button
+            pygame.draw.rect(self.screen, train_button_color, self.train_button)
+            text_surface = self.button_font.render("Train", True, self.white)
+            text_rect = text_surface.get_rect(center=self.train_button.center)
+            self.screen.blit(text_surface, text_rect)
+
+            # Evaluate button
+            pygame.draw.rect(self.screen, eval_button_color, self.evaluate_button)
+            text_surface = self.button_font.render("Eval", True, self.white)
+            text_rect = text_surface.get_rect(center=self.evaluate_button.center)
+            self.screen.blit(text_surface, text_rect)
+
 
     
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if self.game.done:
-                self.game.reset_game()
 
             if event.key == pygame.K_SPACE:
                 self.cycle_fps_setting()
@@ -148,3 +172,9 @@ class UI:
                 self.snake.add_input("right")
             elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
                 self.snake.add_input("left")
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.train_button.collidepoint(event.pos):
+                self.agent.train_mode = True
+            elif self.evaluate_button.collidepoint(event.pos):
+                self.agent.train_mode = False

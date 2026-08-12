@@ -14,7 +14,7 @@ class SnakeNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.CNN_output_channels = 64
+        self.CNN_output_channels = 32
         self.linear_input = 4 + (self.CNN_output_channels * cfg.PIXEL_WIDTH * cfg.PIXEL_HEIGHT)
 
         # Convolutional part of the neural net
@@ -61,6 +61,7 @@ class AgentCNN:
     def __init__(self, game):
         self.game = game
         self.snake = self.game.snake
+        self.train_mode = True
         self.rows = int(cfg.GAME_WINDOW_HEIGHT / cfg.SNAKE_SIZE)
         self.columns = int(cfg.GAME_WINDOW_WIDTH / cfg.SNAKE_SIZE)
 
@@ -112,6 +113,12 @@ class AgentCNN:
         x, y = self.snake.head
         column = x // cfg.SNAKE_SIZE
         row = y // cfg.SNAKE_SIZE
+        if column == 10:
+            print("Index out of range")
+            print("head:", self.snake.head)
+            print("row:", row)
+            print("game done:", self.game.done)
+            print("food:", self.game.food)
 
         board[0, row, column] = 1
 
@@ -185,12 +192,14 @@ class AgentCNN:
         return self.action_map[self.snake.direction][action]
 
     def step(self):
+        if not self.train_mode:
+            self.eval_step()
+            return
+        
         self.steps += 1
-
-        # Get current state as a tuple
         state = self.get_current_state()
 
-        # Choose and perform action
+        # Choose and perform action using epsilon greedy policy
         action = self.get_action_epsilon_greedy(state)
         self.perform_action(action)
 
@@ -225,8 +234,18 @@ class AgentCNN:
         if self.steps % 100000 == 0:
             print(f"Steps: {self.steps:,}")
             self.game.print_scores()
-        
 
+    def eval_step(self):
+        """
+        A separate step method when training is deactivated.
+        Plays optimal action and advances game. 
+        Does not adjust training variables or add experiences to buffer.
+        """
+
+        state = self.get_current_state()
+        action = self.get_action_greedy(state)
+        self.perform_action(action)
+        self.game.update_game()
     
     def train(self):
         """
