@@ -28,11 +28,15 @@ class Game:
         self.food = self.random_food_position()
 
     def reset_snake(self):
-        #self.snake = Snake(self.start_position(cfg.GAME_WINDOW_WIDTH), self.start_position(cfg.GAME_WINDOW_HEIGHT), "right")
-        self.snake = Snake(180, 40, "right")
+        self.snake = Snake(self.start_position(cfg.GAME_WINDOW_WIDTH), self.start_position(cfg.GAME_WINDOW_HEIGHT), "right")
 
     def random_food_position(self):
-        return [self.random_grid_coordinate(cfg.GAME_WINDOW_WIDTH), self.random_grid_coordinate(cfg.GAME_WINDOW_HEIGHT)]
+        new_food = [self.random_grid_coordinate(cfg.GAME_WINDOW_WIDTH), self.random_grid_coordinate(cfg.GAME_WINDOW_HEIGHT)]
+
+        while new_food in self.snake.body:
+            new_food = [self.random_grid_coordinate(cfg.GAME_WINDOW_WIDTH), self.random_grid_coordinate(cfg.GAME_WINDOW_HEIGHT)]
+
+        return new_food
 
     def preset_food_position(self):
         center_x = (cfg.GAME_WINDOW_WIDTH // (2 * cfg.SNAKE_SIZE)) * cfg.SNAKE_SIZE
