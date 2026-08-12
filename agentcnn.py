@@ -307,5 +307,27 @@ class AgentCNN:
         loss.backward()
         self.optimizer.step()
 
+    def save_agent(self):
+        torch.save({
+        "model_state_dict" : self.model.state_dict(),
+        "target_model_state_dict" : self.target_model.state_dict(),
+        "optimizer_state_dict" : self.optimizer.state_dict(),
+        "steps" : self.steps,
+        "epsilon" : self.epsilon,
+        "generations" : self.generation
+        }, f"agent_checkpoint_{self.steps}.pth")
+
+    def load_agent(self):
+        loaded_agent = torch.load("trained_agent.pth")
+        self.model.load_state_dict(loaded_agent["model_state_dict"])
+        self.target_model.load_state_dict(loaded_agent["target_model_state_dict"])
+        self.optimizer.load_state_dict(loaded_agent["optimizer_state_dict"])
+
+        self.steps = loaded_agent["steps"]
+        self.epsilon = loaded_agent["epsilon"]
+        self.generation = loaded_agent["generations"]
+
+        self.replay_buffer.clear()
+
     
     
