@@ -20,9 +20,12 @@ while running:
         else:
             game_ui.handle_event(event)
     
-    if game_update_timer == 4:
-        game.update_game()
-        game_update_timer = 0
+    if game_update_timer == 6:
+        if game.done:
+            game.reset_game()
+        else:
+            game.update_game()
+            game_update_timer = 0
     else:
         game_update_timer += 1
 
