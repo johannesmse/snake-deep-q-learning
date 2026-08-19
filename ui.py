@@ -18,6 +18,8 @@ class UI:
         self.evaluate_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH + cfg.BUTTON_WIDTH // 2, 28, cfg.BUTTON_WIDTH // 2, cfg.BUTTON_HEIGHT)
         self.load_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH, 30 + cfg.BUTTON_HEIGHT, cfg.BUTTON_WIDTH, cfg.BUTTON_HEIGHT)
         self.save_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH, 32 + cfg.BUTTON_HEIGHT * 2, cfg.BUTTON_WIDTH, cfg.BUTTON_HEIGHT)
+        self.obs_fast_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH, 34 + cfg.BUTTON_HEIGHT * 3, cfg.BUTTON_WIDTH, cfg.BUTTON_HEIGHT)
+        self.obs_slow_button = pygame.Rect(cfg.MENU_START_X + cfg.MENU_WINDOW_WIDTH, 36 + cfg.BUTTON_HEIGHT * 4, cfg.BUTTON_WIDTH, cfg.BUTTON_HEIGHT)
 
         self.button_font = pygame.font.SysFont(None, 24)
         
@@ -180,6 +182,31 @@ class UI:
             text_rect = text_surface.get_rect(center=self.save_button.center)
             self.screen.blit(text_surface, text_rect)
 
+            # Draw observe buttons
+            if self.display_setting == 0:
+                fast_button_color = self.activated_color
+                slow_button_color = self.unactivated_color
+            elif self.display_setting == 10:
+                fast_button_color = self.unactivated_color
+                slow_button_color = self.activated_color
+            else:
+                fast_button_color = self.unactivated_color
+                slow_button_color = self.unactivated_color
+
+
+            # Observe fast button
+            pygame.draw.rect(self.screen, fast_button_color, self.obs_fast_button)
+            text_surface = self.button_font.render("Observe fast", True, self.white)
+            text_rect = text_surface.get_rect(center=self.obs_fast_button.center)
+            self.screen.blit(text_surface, text_rect)
+
+            # Observe slow button
+            pygame.draw.rect(self.screen, slow_button_color, self.obs_slow_button)
+            text_surface = self.button_font.render("Observe slow", True, self.white)
+            text_rect = text_surface.get_rect(center=self.obs_slow_button.center)
+            self.screen.blit(text_surface, text_rect)
+
+
 
     
     def handle_event(self, event):
@@ -199,11 +226,26 @@ class UI:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.train_button.collidepoint(event.pos):
                 self.agent.train_mode = True
+                
             elif self.evaluate_button.collidepoint(event.pos):
                 self.agent.train_mode = False
+
             elif self.load_button.collidepoint(event.pos):
                 self.agent.load_agent()
                 print("Loaded agent from file")
+
             elif self.save_button.collidepoint(event.pos):
                 self.agent.save_agent()
                 print("Saved agent to file")
+
+            elif self.obs_fast_button.collidepoint(event.pos):
+                if self.display_setting == 0:
+                    self.display_setting = None
+                else:
+                    self.display_setting = 0
+
+            elif self.obs_slow_button.collidepoint(event.pos):
+                if self.display_setting == 10:
+                    self.display_setting = None
+                else:
+                    self.display_setting = 10

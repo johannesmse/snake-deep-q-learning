@@ -1,4 +1,5 @@
 import os
+# Force torch to use CPU to train
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import config as cfg
