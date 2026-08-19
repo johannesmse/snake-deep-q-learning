@@ -319,7 +319,7 @@ class AgentCNN:
         }, f"agent_checkpoint_{self.steps}.pth")
 
     def load_agent(self):
-        loaded_agent = torch.load("trained_agent.pth")
+        loaded_agent = torch.load("trained-agents/trained_agent.pth")
         self.model.load_state_dict(loaded_agent["model_state_dict"])
         self.target_model.load_state_dict(loaded_agent["target_model_state_dict"])
         self.optimizer.load_state_dict(loaded_agent["optimizer_state_dict"])

@@ -24,7 +24,7 @@ class UI:
         self.button_font = pygame.font.SysFont(None, 24)
         
         self.food = pygame.Rect(0, 0, cfg.SNAKE_SIZE, cfg.SNAKE_SIZE)
-        self.apple_image = pygame.image.load("food.png").convert_alpha()
+        self.apple_image = pygame.image.load("images/food.png").convert_alpha()
         self.apple_image = pygame.transform.scale(self.apple_image, (cfg.SNAKE_SIZE + 2, cfg.SNAKE_SIZE + 2))
 
         self.score_font = pygame.font.SysFont(None, 24)
@@ -226,7 +226,7 @@ class UI:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.train_button.collidepoint(event.pos):
                 self.agent.train_mode = True
-                
+
             elif self.evaluate_button.collidepoint(event.pos):
                 self.agent.train_mode = False
 
